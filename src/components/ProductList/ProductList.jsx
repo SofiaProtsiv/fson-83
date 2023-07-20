@@ -1,27 +1,32 @@
-import products from "../../assets/products";
-import ProductCard from "../ProductCard";
+import React from "react";
+import PropTypes from "prop-types";
 
-const ProductList = () => {
+// import ProductCard from "../ProductCard/ProductCardInline"; 👎🏼
+// import ProductCard from "../ProductCard/ProductCardCss"; 👎🏼
+// import ProductCard from "../ProductCard/ProductCardModule"; 👍🏼
+// import ProductCard from "../ProductCard/ProductCardMui"; 👍🏼👎🏼
+// import ProductCard from "../ProductCard/ProductCardTailwind"; 👎🏼
+import ProductCard from "../ProductCard/ProductCardStyledComponents"; // 👍🏼
+
+export default function ProductList({ data }) {
   return (
-    <ul>
-      {
-      products.length >0 ?
-      products.map(({ id, title, price, thumbnail }) => {
+    <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+      {data.map(({ id, price, title, thumbnail, stock }) => {
         return (
           <ProductCard
             key={id}
             id={id}
-            title={title}
             price={price}
-            image={thumbnail}
+            title={title}
+            thumbnail={thumbnail}
+            stock={stock}
           />
         );
-      })
-    
-    : <p>No Matches found</p>
-    }
-    </ul>
+      })}
+    </div>
   );
-};
+}
 
-export default ProductList;
+ProductList.propTypes = {
+  data: PropTypes.array,
+};

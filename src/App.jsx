@@ -1,13 +1,25 @@
-
 import ProductList from "./components/ProductList";
+import { products } from "./assets/products";
+import Title from "./components/ui/Title";
+import { AiTwotoneHeart } from "react-icons/ai";
+import "./index.scss";
+import { Icon } from "./assets/icons";
+import img from "./images/react.png";
+// робота з картинками та svg
 
-function App() {
+export default function App() {
   return (
-    <>
-      <ProductList />
-    </>
+    <div className="bg-white">
+      {/* робота з картинками та svg */}
+      <Icon id="logo" />
+      <img src="/img/react.png" alt="logo" />
+      <div className="icon">
+        <AiTwotoneHeart fill="red" />
+      </div>
+      <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
+        <Title title="Customers also purchased" />
+        <ProductList data={products} />
+      </div>
+    </div>
   );
 }
-
-export default App;
-
