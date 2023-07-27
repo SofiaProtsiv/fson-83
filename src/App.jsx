@@ -1,55 +1,141 @@
-import React, { Component } from "react";
+import React from "react";
+import { TopBlock, Title, MainSection } from "./app.styled";
 import Container from "./components/ui/Container";
-import Header from "./components/Header/Header";
 import Cart from "./components/Cart/Cart";
-import ProductsList from "./components/ProductsList/ProductsList";
+import Header from "./components/Header/Header";
+import ProductsList from "./components/ProductsList";
+import Search from "./components/Search";
+import AuthForm from "./components/Form/AuthForm";
 import products from "./assets/products";
 
-export default class App extends Component {
+export default class App extends React.Component {
   state = {
-    isCartModalOpen: false,
+    products,
     cart: [],
+    isCartModalOpen: false,
+    isAuthModalOpen: false,
+    searchQuery: "",
   };
 
-  handleToggleModal = () => {
-    // this.setState({ isCartModalOpen: !this.state.isCartModalOpen });
+  addToCart = (productId) => {
+    const isProductInCart = this.state.cart.find(
+      (product) => product.id === productId
+    );
 
-    this.setState((prevState) => ({
-      isCartModalOpen: !prevState.isCartModalOpen,
-    }));
-  };
+    if (!isProductInCart) {
+      const product = this.state.products.find(
+        (product) => product.id === productId
+      );
 
-  addProductToCart = (product) => {
-    const isProductInCart = this.state.cart.find(({ id }) => id === product.id);
-
-    if (isProductInCart) {
-      const updateCart = this.state.cart.map((item) => {
-        if (item.id === product.id) {
-          return { ...item, quantity: (item.quantity += 1) };
-        }
-        return item;
-      });
-
-      this.setState({ cart: updateCart });
-    } else {
       this.setState((prevState) => ({
         cart: [...prevState.cart, { ...product, quantity: 1 }],
       }));
     }
   };
 
-  render() {
-    const { isCartModalOpen, cart } = this.state;
+  handleIncrementProduct = (productId) => {
+    const product = this.state.cart.find((product) => product.id === productId);
 
+    const updatedCart = this.state.cart.map((item) => {
+      if (product.id === item.id) {
+        return { ...item, quantity: (item.quantity += 1) };
+      }
+      return item;
+    });
+
+    this.setState({ cart: updatedCart });
+  };
+
+  handleDecrementProduct = (productId) => {
+    const product = this.state.cart.find((product) => product.id === productId);
+
+    if (product.quantity <= 1) {
+      this.removeFromCart(productId);
+      return;
+    }
+
+    const updatedCart = this.state.cart.map((item) => {
+      if (product.id === item.id) {
+        return { ...item, quantity: (item.quantity -= 1) };
+      }
+      return item;
+    });
+
+    this.setState({ cart: updatedCart });
+  };
+
+  removeFromCart = (productId) => {
+    const updatedCart = this.state.cart.filter(
+      (product) => product.id !== productId
+    );
+
+    this.setState({ cart: updatedCart });
+  };
+
+  handleCartModal = () => {
+    this.setState((prevState) => ({
+      isCartModalOpen: !prevState.isCartModalOpen,
+    }));
+  };
+
+  handleAuthModal = () => {
+    this.setState((prevState) => ({
+      isAuthModalOpen: !prevState.isAuthModalOpen,
+    }));
+  };
+
+  handleChange = ({ target }) => {
+    const normalizedValue = target.value.trim().toLowerCase();
+
+    this.setState({ searchQuery: normalizedValue });
+  };
+
+  getFilteredProducts = () => {
+    return this.state.products.filter(({ name }) =>
+      name.toLowerCase().includes(this.state.searchQuery)
+    );
+  };
+
+  render() {
     return (
       <Container>
-        <Header cart={cart} handleToggleModal={this.handleToggleModal} />
-        <ProductsList
-          products={products}
-          addProductToCart={this.addProductToCart}
+        <Header
+          cart={this.state.cart}
+          handleCartModal={this.handleCartModal}
+          handleAuthModal={this.handleAuthModal}
         />
-        {isCartModalOpen && (
-          <Cart cart={cart} handleToggleModal={this.handleToggleModal} />
+
+        <MainSection>
+          <TopBlock>
+            <Title>Products</Title>
+            <Search
+              searchQuery={this.state.searchQuery}
+              handleChange={this.debouncedOnChange}
+            />
+          </TopBlock>
+          {this.getFilteredProducts().length ? (
+            <ProductsList
+              products={this.getFilteredProducts()}
+              cart={this.state.cart}
+              addToCart={this.addToCart}
+            />
+          ) : (
+            <p>No matches found!</p>
+          )}
+        </MainSection>
+
+        {this.state.isCartModalOpen ? (
+          <Cart
+            cart={this.state.cart}
+            removeFromCart={this.removeFromCart}
+            handleCartModal={this.handleCartModal}
+            handleDecrementProduct={this.handleDecrementProduct}
+            handleIncrementProduct={this.handleIncrementProduct}
+          />
+        ) : null}
+
+        {this.state.isAuthModalOpen && (
+          <AuthForm handleAuthModal={this.handleAuthModal} />
         )}
       </Container>
     );

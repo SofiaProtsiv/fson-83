@@ -1,5 +1,6 @@
 import React from "react";
 import { AiOutlineClose } from "react-icons/ai";
+import { TbTrashXFilled } from "react-icons/tb";
 import {
   Backdrop,
   ModalContent,
@@ -8,57 +9,90 @@ import {
   CartItem,
   CartList,
   Title,
-  ProductName,
-  Wrapper,
+  ProductImage,
   ProductPrice,
+  PriceWrapper,
+  CounterWrapper,
   ProductQuantity,
+  Button,
   TotalPrice,
   TotalPriceWrapper,
   Text,
+  Wrapper,
+  RemoveButton,
+  ProductPricePerItem,
+  Summary,
+  MakeOrderButton,
 } from "./cart.styled";
 
-export default function Cart({ handleToggleModal, cart }) {
-  const handleCloseOnBackdrop = (e) => {
+export default function Cart({
+  cart,
+  handleCartModal,
+  removeFromCart,
+  handleIncrementProduct,
+  handleDecrementProduct,
+}) {
+  const handleBackdrop = (e) => {
     if (e.currentTarget === e.target) {
-      handleToggleModal();
+      handleCartModal();
     }
   };
 
   const totalPrice = cart.reduce(
-    (sum, { price, quantity }) => (sum += price * quantity),
+    (total, { price, quantity }) => total + price * quantity,
     0
   );
+
   return (
-    <Backdrop onClick={handleCloseOnBackdrop}>
+    <Backdrop onClick={handleBackdrop}>
       <Modal>
-        <CloseButton onClick={handleToggleModal}>
-          <AiOutlineClose />
+        <CloseButton>
+          <AiOutlineClose onClick={handleCartModal} />
         </CloseButton>
 
         <ModalContent>
           <Title>Cart</Title>
-
-          {cart.length ? (
+          {cart.length === 0 ? (
+            <p>Your cart is empty</p>
+          ) : (
             <CartList>
-              {cart?.map(({ id, image, price, quantity }) => (
+              {cart.map(({ id, image, price, quantity }) => (
                 <CartItem key={id}>
-                  <ProductName>{image}</ProductName>
                   <Wrapper>
-                    <ProductQuantity>{quantity}</ProductQuantity>X
-                    <ProductPrice>${price}</ProductPrice>
+                    <ProductImage>{image}</ProductImage>
+                    <CounterWrapper>
+                      <Button onClick={() => handleDecrementProduct(id)}>
+                        -
+                      </Button>
+                      <ProductQuantity>{quantity}</ProductQuantity>
+                      <Button onClick={() => handleIncrementProduct(id)}>
+                        +
+                      </Button>
+                    </CounterWrapper>
+                    <PriceWrapper>
+                      <ProductPrice>${price * quantity}</ProductPrice>
+                      <ProductPricePerItem>
+                        ${price} / per item
+                      </ProductPricePerItem>
+                    </PriceWrapper>
                   </Wrapper>
-                  <button>Remove</button>
+                  <RemoveButton onClick={() => removeFromCart(id)}>
+                    <TbTrashXFilled />
+                  </RemoveButton>
                 </CartItem>
               ))}
             </CartList>
-          ) : (
-            <p>Your cart is empty</p>
           )}
 
-          <TotalPriceWrapper>
-            <Text>Total:</Text>
-            <TotalPrice>${totalPrice}</TotalPrice>
-          </TotalPriceWrapper>
+          {cart.length !== 0 && (
+            <Summary>
+              <TotalPriceWrapper>
+                <Text>Total:</Text>
+                <TotalPrice>${totalPrice}</TotalPrice>
+              </TotalPriceWrapper>
+              <MakeOrderButton>Make order</MakeOrderButton>
+            </Summary>
+          )}
         </ModalContent>
       </Modal>
     </Backdrop>
