@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useMemo } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import { TbTrashXFilled } from "react-icons/tb";
 import {
@@ -24,24 +24,55 @@ import {
   Summary,
   MakeOrderButton,
 } from "./cart.styled";
+import { Context } from "../../contex/stateContext";
 
-export default function Cart({
-  cart,
-  handleCartModal,
-  removeFromCart,
-  handleIncrementProduct,
-  handleDecrementProduct,
-}) {
+export default function Cart() {
+  const { handleCartModal, cart, setCart } = useContext(Context);
+
   const handleBackdrop = (e) => {
     if (e.currentTarget === e.target) {
       handleCartModal();
     }
   };
 
-  const totalPrice = cart.reduce(
-    (total, { price, quantity }) => total + price * quantity,
-    0
+  const totalPrice = useMemo(
+    () =>
+      cart.reduce((total, { price, quantity }) => total + price * quantity, 0),
+    [cart]
   );
+
+  const handleIncrementProduct = (productId) => {
+    const updatedCart = cart.map((item) => {
+      if (item.id === productId) {
+        return { ...item, quantity: item.quantity + 1 };
+      }
+      return item;
+    });
+    setCart(updatedCart);
+  };
+
+  const handleDecrementProduct = (productId) => {
+    const product = cart.find((product) => product.id === productId);
+
+    if (product.quantity <= 1) {
+      removeFromCart(productId);
+      return;
+    }
+
+    const updatedCart = cart.map((item) => {
+      if (product.id === item.id) {
+        return { ...item, quantity: (item.quantity -= 1) };
+      }
+      return item;
+    });
+
+    setCart(updatedCart);
+  };
+
+  const removeFromCart = (productId) => {
+    const updatedCart = cart.filter((product) => product.id !== productId);
+    setCart(updatedCart);
+  };
 
   return (
     <Backdrop onClick={handleBackdrop}>
@@ -56,10 +87,10 @@ export default function Cart({
             <p>Your cart is empty</p>
           ) : (
             <CartList>
-              {cart.map(({ id, image, price, quantity }) => (
+              {cart.map(({ id, images, price, quantity, title }) => (
                 <CartItem key={id}>
                   <Wrapper>
-                    <ProductImage>{image}</ProductImage>
+                    <ProductImage src={images[0]} alt={title} />
                     <CounterWrapper>
                       <Button onClick={() => handleDecrementProduct(id)}>
                         -

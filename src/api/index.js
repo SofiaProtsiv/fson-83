@@ -1,6 +1,6 @@
 const BASE_URL = "https://dummyjson.com";
 
-export const getProducts = async ({ searchQuery, skip, limit } = {}) => {
+export const getProducts = async ({ searchQuery = "", skip, limit } = {}) => {
   const params = new URLSearchParams({
     q: searchQuery,
     limit,

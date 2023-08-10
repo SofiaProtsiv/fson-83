@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import ProductCard from "../ProductCard";
+import Skeleton from "../Skeleton";
+import ErrorMessage from "../ErrorMessage";
 import { Button, ProductList } from "./productsList.styled";
-import { getProducts } from "../../api/products";
-import Skeleton from "../Skeleton/Skeleton";
-import ErrorMessage from "../ErrorMessage/ErrorMessage";
+import { getProducts } from "../../api";
+import { Context } from "../../contex/stateContext";
 
 const STATUS = {
   IDLE: "idle",
@@ -12,106 +13,80 @@ const STATUS = {
   REJECTED: "rejected",
 };
 
-export default class ProductsList extends React.Component {
-  state = {
-    products: [],
-    totalPages: 0,
-    skip: 0,
-    limit: 30,
-    currentPage: 1,
-    errorMessage: null,
-    status: STATUS.IDLE,
-  };
+export default function ProductsList() {
+  const { products, setProducts, searchQuery } = useContext(Context);
 
-  async componentDidMount() {
-    this.fetchProducts();
-  }
+  const [status, setStatus] = useState(STATUS.IDLE);
+  const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const limit = 30;
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps.searchQuery !== this.props.searchQuery) {
-      this.setState(
-        {
-          skip: 0,
-          products: [],
-        },
-        () => {
-          this.fetchProducts();
-        }
-      );
-    }
+  useEffect(() => {
+    fetchProducts();
+  }, [searchQuery, currentPage]);
 
-    if (prevState.currentPage !== this.state.currentPage) {
-      this.fetchProducts();
-    }
-  }
+  useEffect(() => {
+    setCurrentPage(1);
+    setProducts([]);
+  }, [searchQuery]);
 
-  handleLoadMore = () => {
-    this.setState((prevState) => ({
-      currentPage: prevState.currentPage + 1,
-      skip: prevState.skip + this.state.limit,
-    }));
-  };
-
-  fetchProducts = async () => {
-    const { skip, limit } = this.state;
-    const { searchQuery } = this.props;
+  const fetchProducts = async () => {
+    const skip = (currentPage - 1) * limit;
+    setStatus(STATUS.PENDING);
 
     try {
-      await this.setState({ status: STATUS.PENDING });
+      const data = await getProducts({ searchQuery, limit, skip });
 
-      const { total, products } = await getProducts({
-        searchQuery,
-        skip,
-        limit,
-      });
-
-      if (!products.length) {
-        throw new Error("No matches found!");
+      if (!data.products.length) {
+        throw new Error("No matches found");
       }
 
-      this.setState((prevState) => ({
-        products: [...prevState.products, ...products],
-        totalPages: Math.ceil(total / limit),
-        errorMessage: null,
-        status: STATUS.RESOLVED,
-      }));
+      setProducts((prevProducts) => [...prevProducts, ...data.products]);
+      setTotalPages(Math.ceil(data.total / limit));
+      setStatus(STATUS.RESOLVED);
+      setError(null);
     } catch (error) {
-      this.setState({ status: STATUS.REJECTED, errorMessage: error.message });
+      setError(error.message);
+      setStatus(STATUS.REJECTED);
     }
   };
 
-  render() {
-    const { currentPage, totalPages, status, errorMessage, products } =
-      this.state;
+  const handleLoadMore = () => {
+    setCurrentPage((prevPage) => prevPage + 1);
+  };
 
-    const isLoadMoreButtonShow = products.length && currentPage < totalPages;
+  const showLoadMoreButton = products.length !== 0 && currentPage < totalPages;
 
-    if (status === STATUS.PENDING) {
-      return <Skeleton />;
-    }
+  if (status === STATUS.PENDING) {
+    return <Skeleton />;
+  }
 
-    if (status === STATUS.RESOLVED) {
-      return (
-        <ProductList>
-          {products.map(({ id, images, title, price }) => {
-            return (
-              <ProductCard
-                key={id}
-                title={title}
-                price={price}
-                images={images}
-              />
-            );
-          })}
-          {isLoadMoreButtonShow ? (
-            <Button onClick={this.handleLoadMore}>Load More</Button>
-          ) : null}
-        </ProductList>
-      );
-    }
+  if (status === STATUS.RESOLVED) {
+    return (
+      <ProductList>
+        {products.map(({ id, images, title, price }) => {
+          return (
+            <ProductCard
+              key={id}
+              id={id}
+              title={title}
+              price={price}
+              images={images}
+            />
+          );
+        })}
 
-    if (status === STATUS.REJECTED) {
-      return <ErrorMessage>{errorMessage}</ErrorMessage>;
-    }
+        {showLoadMoreButton && (
+          <Button onClick={handleLoadMore} disabled={status === STATUS.PENDING}>
+            {status === STATUS.PENDING ? "Loading..." : "Load More"}
+          </Button>
+        )}
+      </ProductList>
+    );
+  }
+
+  if (status === STATUS.REJECTED) {
+    return <ErrorMessage>{error}</ErrorMessage>;
   }
 }

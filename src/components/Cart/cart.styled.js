@@ -52,8 +52,9 @@ export const CartItem = styled.li`
 export const ProductName = styled.p`
   font-size: 50px;
 `;
-export const ProductImage = styled.p`
-  font-size: 50px;
+export const ProductImage = styled.img`
+  width: 50px;
+  height: 50px;
 `;
 export const ProductPrice = styled.p`
   font-size: 20px;
@@ -117,8 +118,6 @@ export const Button = styled.button`
   width: 100%;
   border-radius: 0.375rem;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-
-
 `;
 export const RemoveButton = styled.div`
   display: flex;

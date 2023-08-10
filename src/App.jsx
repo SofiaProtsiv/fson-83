@@ -1,38 +1,34 @@
-import React from "react";
-import { TopBlock, Title, MainSection } from "./app.styled";
+import React, { useEffect } from "react";
 import Container from "./components/ui/Container";
 import Header from "./components/Header";
+import Cart from "./components/Cart";
 import ProductsList from "./components/ProductsList";
 import Search from "./components/Search";
-import products from "./assets/products";
-import ErrorMessage from "./components/ErrorMessage/ErrorMessage";
-import debounce from "lodash.debounce";
+import { TopBlock, Title, MainSection } from "./app.styled";
+import { Context } from "./contex/stateContext";
+import { useContext } from "react";
 
-export default class App extends React.Component {
-  state = {
-    searchQuery: "",
-  };
+const App = () => {
+  const { isCartModalOpen } = useContext(Context);
 
-  handleChangeSearchQuery = debounce((searchQuery) => {
-    this.setState({
-      searchQuery,
-    });
-  }, 1000);
+  return (
+    <Container>
+      <Header />
 
-  render() {
-    return (
-      <Container>
-        <Header />
+      <MainSection>
+        <TopBlock>
+          <Title>Products</Title>
+          <Search />
+        </TopBlock>
 
-        <MainSection>
-          <TopBlock>
-            <Title>Products</Title>
-            <Search onChange={this.handleChangeSearchQuery} />
-          </TopBlock>
+        <ProductsList />
+      </MainSection>
 
-          <ProductsList searchQuery={this.state.searchQuery} />
-        </MainSection>
-      </Container>
-    );
-  }
-}
+      {isCartModalOpen && <Cart />}
+
+      {/* {isAuthModalOpen && <AuthForm onSubmit={onSubmit} />} */}
+    </Container>
+  );
+};
+
+export default App;

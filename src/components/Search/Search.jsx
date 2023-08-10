@@ -1,49 +1,25 @@
-import React from "react";
+import React, { useContext } from "react";
 import { AiOutlineSearch } from "react-icons/ai";
 import { Label, Input, Icon } from "./search.styled";
+import { Context } from "../../contex/stateContext";
 
-export default class Search extends React.Component {
-  state = {
-    searchQuery: "",
+export default function Search() {
+  const { searchQuery, setSearchQuery } = useContext(Context);
+
+  const handleInput = ({ target }) => {
+    setSearchQuery(target.value);
   };
-
-  handleInput = async (e) => {
-    await this.setState({ searchQuery: e.target.value });
-
-    this.props.onChange(e.target.value);
-  };
-
-  render() {
-    return (
-      <Label>
-        <Icon>
-          <AiOutlineSearch />
-        </Icon>
-        <Input
-          name="query"
-          placeholder="Search..."
-          value={this.state.searchQuery}
-          onChange={this.handleInput}
-        />
-      </Label>
-    );
-  }
+  return (
+    <Label>
+      <Icon>
+        <AiOutlineSearch />
+      </Icon>
+      <Input
+        name="query"
+        placeholder="Search..."
+        value={searchQuery}
+        onChange={handleInput}
+      />
+    </Label>
+  );
 }
-
-// export default class Search extends React.Component {
-//   render() {
-//     return (
-//       <Label>
-//         <Icon>
-//           <AiOutlineSearch />
-//         </Icon>
-//         <Input
-//           name="query"
-//           placeholder="Search..."
-//           value={this.props.searchQuery}
-//           onChange={this.props.onChange}
-//         />
-//       </Label>
-//     );
-//   }
-// }

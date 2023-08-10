@@ -1,8 +1,11 @@
-## 03-module-02-lesson
-### Работа с API
+## 04-module-02-lesson
+### Hooks
 
-- Методи життєвого циклу і HTTP-запити
-- Стан і компонент для індикатора завантаження
-- Стан і компонент для обробки помилок
-- Патерн «State machine» для збереження статусу запиту
+- useRef
+- useMemo
+- useCallback
+- useReducer
+- useContect
+- Кастомні хуки
+- Бібліотека [react-use](https://github.com/streamich/react-use)
 - Refactoring 
