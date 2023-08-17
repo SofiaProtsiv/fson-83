@@ -11,7 +11,7 @@ import {
   Icon,
 } from "./productCard.styled";
 import { AiFillHeart } from "react-icons/ai";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 
 export default function ProductCard({ id, images, title, price }) {
   const [isFavorite, setIsFavorite] = useState(false);
@@ -44,15 +44,16 @@ export default function ProductCard({ id, images, title, price }) {
       );
       setFavorites(updatedFavorites);
     }
-
     setIsFavorite(!isFavorite);
   };
+
+  const location = useLocation();
 
   return (
     <ProductItem key={id}>
       <ProductImage image={images[0]}></ProductImage>
       <ContentWrapper>
-        <NavLink to={`/products/${id}`}>
+        <NavLink to={`/products/${id}`} state={{ from: location.pathname }}>
           <ProductName>{title}</ProductName>
         </NavLink>
         <Wrapper>

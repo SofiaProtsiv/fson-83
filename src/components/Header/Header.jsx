@@ -9,7 +9,7 @@ import {
 import { BsHeartFill } from "react-icons/bs";
 import { FaShoppingCart, FaUserCircle } from "react-icons/fa";
 import { useStateContext } from "../../context/StateContext";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 
 export default function Header() {
   const { cart, setIsCartModalOpen } = useStateContext();
@@ -25,15 +25,17 @@ export default function Header() {
     }));
   };
 
+  const location = useLocation();
+
   return (
     <HeaderWrapper>
-      <NavLink to="/">
+      <NavLink to="/" state={{ from: location.pathname }}>
         <Logo>E-commerse</Logo>
       </NavLink>
 
       <NavigationContainer>
         <NavigationWrapper>
-          <NavLink to="/favorites">
+          <NavLink to="/favorites" state={{ from: location.pathname }}>
             <NavigationItem>
               <BsHeartFill />
             </NavigationItem>

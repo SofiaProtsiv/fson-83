@@ -1,10 +1,15 @@
+import { lazy } from "react";
 import { Route, Routes } from "react-router-dom";
 
 import Layout from "./layout";
-import HomePage from "./pages/HomePage";
-import FavoritesPage from "./pages/FavoritesPage";
-import NotFoundPage from "./pages/NotFoundPage";
-import ProductDetailsPage from "./pages/ProductDetailsPage";
+
+const HomePage = lazy(() => import("./pages/HomePage"));
+const FavoritesPage = lazy(() => import("./pages/FavoritesPage"));
+const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
+const ProductDetailsPage = lazy(() => import("./pages/ProductDetailsPage"));
+const ProcductCharacteristic = lazy(() =>
+  import("./components/ProcductCharacteristic")
+);
 
 export default function App() {
   return (
@@ -12,7 +17,9 @@ export default function App() {
       <Route path="/" element={<Layout />}>
         <Route index element={<HomePage />} />;
         <Route path="favorites" element={<FavoritesPage />} />
-        <Route path="products/:productId" element={<ProductDetailsPage />} />
+        <Route path="products/:productId" element={<ProductDetailsPage />}>
+          <Route path="characteristic" element={<ProcductCharacteristic />} />
+        </Route>
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

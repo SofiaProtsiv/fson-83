@@ -3,6 +3,7 @@ import Header from "../components/Header";
 import Cart from "../components/Cart";
 import Container from "../components/ui/Container";
 import { useStateContext } from "../context/StateContext";
+import { Suspense } from "react";
 
 export default function Layout() {
   const { isCartModalOpen } = useStateContext();
@@ -10,7 +11,9 @@ export default function Layout() {
   return (
     <Container>
       <Header />
-      <Outlet />
+      <Suspense fallback={<h3>Loading...</h3>}>
+        <Outlet />
+      </Suspense>
 
       {isCartModalOpen && <Cart />}
     </Container>

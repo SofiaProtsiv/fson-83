@@ -1,21 +1,15 @@
-import { Suspense, useEffect, useState } from "react";
-import {
-  NavLink,
-  Outlet,
-  useLocation,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import Skeleton from "../../components/Skeleton";
 import ErrorMessage from "../../components/ErrorMessage";
 import {
-  ProductDetailsWrapper,
-  ProductImage,
-  ProductPrice,
-  ProductTitle,
-} from "./productDetails.styled";
+  ProductCategory,
+  ProductRating,
+  ProductStock,
+  ProductBrand,
+  ProductDescription,
+} from "../../pages/ProductDetailsPage/productDetails.styled";
 import { getProductById } from "../../api";
-import { Button } from "../../components/Cart/cart.styled";
 
 const STATUS = {
   IDLE: "idle",
@@ -24,7 +18,7 @@ const STATUS = {
   REJECTED: "rejected",
 };
 
-export default function ProductDetailsPage() {
+export default function ProcductCharacteristic() {
   const [product, setProduct] = useState(null);
   const [status, setStatus] = useState(STATUS.IDLE);
   const [errorMessage, setErrorMessage] = useState(null);
@@ -51,34 +45,23 @@ export default function ProductDetailsPage() {
     }
   };
 
-  const location = useLocation();
-
   if (status === STATUS.PENDING) {
     return <Skeleton />;
   }
-
   if (status === STATUS.RESOLVED) {
-    const { id, title, images, price } = product;
+    const { category, rating, stock, brand, description } = product;
 
     return (
       <>
-        <NavLink to={location.state?.from ? location.state.from : "/"}>
-          Go back
-        </NavLink>
-
-        <ProductDetailsWrapper id={id}>
-          <ProductImage src={images[0]} alt={title} />
-          <ProductTitle>{title}</ProductTitle>
-          <ProductPrice>Price: ${price}</ProductPrice>
-          <NavLink to="characteristic">More characterictc</NavLink>
-
-          <Suspense fallback={<div>Loading...</div>}>
-            <Outlet />
-          </Suspense>
-        </ProductDetailsWrapper>
+        <ProductCategory>Category: {category}</ProductCategory>
+        <ProductRating>Rating: {rating}</ProductRating>
+        <ProductStock>Stock: {stock}</ProductStock>
+        <ProductBrand>Brand: {brand}</ProductBrand>
+        <ProductDescription>Description: {description}</ProductDescription>
       </>
     );
   }
+
   if (status === STATUS.REJECTED) {
     return <ErrorMessage>{errorMessage}</ErrorMessage>;
   }

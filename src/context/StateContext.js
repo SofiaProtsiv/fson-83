@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 const Context = createContext();
 
@@ -6,7 +7,7 @@ export const StateContext = ({ children }) => {
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState([]);
   const [favorites, setFavorites] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
 
   useEffect(() => {
@@ -24,8 +25,7 @@ export const StateContext = ({ children }) => {
         setProducts,
         cart,
         setCart,
-        searchQuery,
-        setSearchQuery,
+        searchParams, setSearchParams,
         favorites,
         setFavorites,
         isCartModalOpen,
