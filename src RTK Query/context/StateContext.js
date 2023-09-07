@@ -4,15 +4,12 @@ import { useSearchParams } from "react-router-dom";
 const Context = createContext();
 
 export const StateContext = ({ children }) => {
-  const [products, setProducts] = useState([]);
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
 
   return (
     <Context.Provider
       value={{
-        products,
-        setProducts,
         isCartModalOpen,
         setIsCartModalOpen,
         searchParams,
