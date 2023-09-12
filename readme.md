@@ -1,4 +1,7 @@
-## 07-module-02-lesson
+## 08-module-01-lesson
+### Реєстрація, логін
 
-- [RTK Query](https://redux-toolkit.js.org/rtk-query/overview)
-- [TanStack Query (FKA React Query)](https://tanstack.com/query/v4/docs/react/overview)
+- Знайомство з JWT
+- Реєстрація, логін та логаут користувача
+- Персист токена з redux-persist
+- Робота з приватними ресурсами користувача

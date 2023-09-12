@@ -1,0 +1,27 @@
+import { lazy } from "react";
+import { Route, Routes } from "react-router-dom";
+import Layout from "./layout/Layout";
+import LoginScreen from "./screens/LoginScreen";
+import RegisterScreen from "./screens/RegisterScreen/RegisterScreen";
+
+export default function App() {
+  const HomeScreen = lazy(() => import("./screens/HomeScreen"));
+  const FavoritesScreen = lazy(() => import("./screens/FavoritesScreen"));
+  const ProductDetailsScreen = lazy(() =>
+    import("./screens/ProductDetailsScreen")
+  );
+  const NotFoundScreen = lazy(() => import("./screens/NotFoundScreen"));
+
+  return (
+    <Routes>
+      <Route path="/" element={<Layout />}>
+        <Route index element={<HomeScreen />} />
+        <Route path="product/:productId" element={<ProductDetailsScreen />} />
+        <Route path="favorites" element={<FavoritesScreen />} />
+        <Route path="*" element={<NotFoundScreen />} />
+      </Route>
+      <Route path="/login" element={<LoginScreen />} />
+      <Route path="/register" element={<RegisterScreen />} />
+    </Routes>
+  );
+}
