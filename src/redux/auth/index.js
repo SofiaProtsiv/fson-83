@@ -1,5 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+// RTK QUERY
+
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: fetchBaseQuery({
@@ -14,6 +16,7 @@ export const authApi = createApi({
       return headers;
     },
   }),
+  keepUnusedDataFor: 1,
   endpoints: (builder) => ({
     login: builder.mutation({
       query: (credentials) => ({

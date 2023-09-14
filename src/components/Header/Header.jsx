@@ -13,8 +13,7 @@ import { useStateContext } from "../../context/StateContext";
 import { useGetCartQuery } from "../../redux/products";
 import { useDispatch } from "react-redux";
 import { logOut } from "../../redux/auth/slice";
-import { authApi, useGetCurrentUserQuery } from "../../redux/auth";
-import { resetApiState } from "@reduxjs/toolkit/query/react";
+import { useGetCurrentUserQuery } from "../../redux/auth";
 
 export default function Header() {
   const location = useLocation();
@@ -46,7 +45,6 @@ export default function Header() {
   const handleLogOut = () => {
     dispatch(logOut());
     navigate("/login");
-    resetApiState(authApi.endpoints.login);
   };
   return (
     <HeaderWrapper>
@@ -69,7 +67,10 @@ export default function Header() {
             </NavigationItem>
           </NavLink>
           {isUserAuthorized ? (
-            <NavigationItem onClick={handleLogOut}>Log Out</NavigationItem>
+            <>
+              <p>{isUserAuthorized.name}</p>
+              <NavigationItem onClick={handleLogOut}>Log Out</NavigationItem>
+            </>
           ) : (
             <NavLink to="/login">
               <NavigationItem onClick={handleAuthForm}>
